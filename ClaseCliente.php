@@ -57,10 +57,10 @@ class Cliente{
     
     public function __toString() {
         $estado = "";
-        if (!$this->getDadoBaja()) {
-            $estado = "Dado de baja";
-        } else {
+        if ($this->getDadoBaja()) {
             $estado = "Activo";
+        } else {
+            $estado = "Inactivo";
         }
 
         return "Nombre: " . $this->getNombre() .

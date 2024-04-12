@@ -65,10 +65,11 @@ class Moto{
     }
 
     public function darPrecioVenta(){
-        $venta = 0;
-        $compra = $this->getCosto();
-        $anioTranscurrido = 2024 - $this->getAnioFabric();
+        $venta = -1;
         if($this->getActiva()){
+            $compra = $this->getCosto();
+            $anioActual = date('Y');
+            $anioTranscurrido = $anioActual - $this->getAnioFabric();
             $venta = $compra + $compra * ($anioTranscurrido * $this->getPorcIncAnual());
         } else {
             return $venta; //si Activa es false entonces retorna 0.
@@ -76,10 +77,10 @@ class Moto{
     }
 
     public function __toString() {
-        if (!$this->getActiva()) {
-            $activa = "No esta a la venta";
+        if ($this->getActiva()) {
+            $activa = "Activa";
         } else {
-            $activa = "Esta disponible";
+            $activa = "Inactiva";
         }
 
         return "Código moto: " . $this->getCodigo() . 

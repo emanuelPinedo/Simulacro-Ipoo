@@ -54,30 +54,16 @@ class Empresa{
         $this->colecVentas = $colVentas;
     }
 
-    public function imprimirColeccion ($coleccion){
-        $result = "";
-        foreach ($coleccion as $coleccionActual) {
-           $result .= $coleccionActual . "\n";
-        }
-        return $result;
-    }
-
-    public function verificarCole ($coleccion){
-        if ($coleccion = "") {
-            $coleccion = "Esta coleccion esta vacia.";
-        }
-    }
-
-    //retorna el obj moto cuyo codigo coincide con el recibido
     public function retornarMoto($codigoMoto){
         $motoEncontrada = null; // null pq todavia no se encuentra la moto
         $cont = 0;
         $motos= $this->getColecMotos();
         $cantMotos = count($motos);
 
-        while ($motoEncontrada === null && $cantMotos>$cont) {
-            if ($motos[$cont]->getCodigo() === $codigoMoto) {
-                $motoEncontrada = $motos[$cont];
+        while ($cont < $cantMotos && $motoEncontrada === null) {
+            $moto = $this->getColecMotos()[$cont];
+            if ($moto->getCodigo() == $codigoMoto) {
+                $motoEncontrada = $moto;
             }
             $cont++;
         }
@@ -85,33 +71,25 @@ class Empresa{
     }
     
     public function registrarVenta($colCodigosMoto, $objCliente){
-        $importeFinal = 0;
-        $fechaActual = date('Y');//2024
+        $impFinal = 0;
 
         if ($objCliente->getDadoBaja()) {
-            return null;//Si el cliente esta dado de baja, retorna null.
+            return null;
         }
 
-        $coleccionVentas = $this->getColecVentas();
-        $numeroVenta = count($coleccionVentas) + 1;
-        $coleccionMotosVenta = [];
-
-        foreach ($colCodigosMoto as $codigoAct) {
-            $moto = $this->retornarMoto($codigoAct);
-
-            if ($moto !== null && $moto->getActiva()) {
-                $precioVenta = $moto->darPrecioVenta();
-                $importeFinal += $precioVenta;
-                $coleccionMotosVenta[] = $moto;
+        $impFinal = 0;
+        foreach ($colCodigosMoto as $codeMoto) {
+            $objMotoCod = $this->retornarMoto($codeMoto);
+            if ($objMotoCod !== null && $objMotoCod->getActiva() && $objCliente->getDadoBaja()) {
+                $venta = new Venta(null, date('Y'), $objCliente, $objMotoCod, $objMotoCod->darPrecioVenta());
+                $this->colecVentas[] = $venta;
+                $impFinal += $objMotoCod->darPrecioVenta();
             }
         }
+        // modifico array
+        $this->setColecVentas($this->getColecVentas());
 
-        $venta = new Venta($numeroVenta, $fechaActual, $objCliente, $coleccionMotosVenta, $importeFinal);
-
-        $coleccionVentas[] = $venta;
-        $this->setColecVentas($coleccionVentas);
-
-        return $venta;
+        return $impFinal;
     }
 
     public function retornarVentasXCliente($tipo,$numDoc){
@@ -119,30 +97,77 @@ class Empresa{
         $ventas = $this->getColecVentas();
         foreach ($ventas as $venta) {
             $clienteVenta = $venta->getRefCliente();
-            if ( $clienteVenta->getTipoDoc() === $tipo &&  $clienteVenta->getNroDoc() === $numDoc ) {
-                //el cliente coincide con lo buscado
-                $ventasCliente[] = $venta; //se almacena la venta en el arreglo
+            if ($clienteVenta->getTipoDoc() === $tipo &&  $clienteVenta->getNroDoc() === $numDoc ) {
+                //Si el cliente tiene todos esos datos buscados almacenamos la venta.
+                $ventasCliente[] = $venta;
             }
         }
         return $ventasCliente;
     }
 
+    public function listadoClientes()
+    {
+        $col = $this->getColecClientes();
+        $contador = count($col);
+        $listado = "";
+
+        for ($i = 0; $i < $contador; $i++) {
+            $clientes = $col[$i];
+            $listado .= $clientes . "\n";
+        }
+        return $listado;
+    }
+
+    public function listadoMotos()
+    {
+        $col = $this->getColecMotos();
+        $contador = count($col);
+        $listado = "";
+
+        for ($i = 0; $i < $contador; $i++) {
+            $motos = $col[$i];
+            $listado .= $motos . "\n";
+        }
+        return $listado;
+    }
+
+    public function listadoVentas()
+    {
+        $col = $this->getColecVentas();
+        $contador = count($col);
+        $listado = "";
+
+        for ($i = 0; $i < $contador; $i++) {
+            foreach ($col[$i] as $venta) {
+                $listado .= $venta . "\n";
+            }
+        }
+        return $listado;
+    }
+
+    public function listadoVentasCliente($cliente)
+    {
+        $ventasCliente = $this->retornarVentasXCliente($cliente->getTipo(), $cliente->getNroDoc()); // obtengo los datos acá invocando al metodo retornar. No puedo usar los get fuera de la clase entonces hago la funcion aca. Concateno
+        $listado = null;
+
+        if ($ventasCliente != null) {
+            $listado = "";
+            foreach ($ventasCliente as $venta) {
+                $listado .= $venta . "\n";
+            }
+        }
+        return $listado;
+    }
+
+
     public function __toString(){
-        $coleClientes = $this->imprimirColeccion($this->getColecClientes());
-        $coleClientes = $this->verificarCole($coleClientes);
-
-        $coleMotos = $this->imprimirColeccion($this->getColecMotos());
-        $coleMotos = $this->verificarCole($coleMotos);
-
-        $coleVentas = $this->imprimirColeccion($this->getColecVentas());
-        $coleVentas = $this->verificarCole($coleVentas);
-
-
-        return "Denominación: " . $this->getDenominacion() . 
-        "\nDirección: " . $this->getDireccion() . 
-        "\nClientes: " . $coleClientes . 
-        "\nMotos: " .  $coleMotos . 
-        "\nVentas: " . $coleVentas; 
+        $msj = "\nDatos Empresa:\n";
+        $msj .= "Denominación: " . $this->getDenominacion() . "\n";
+        $msj .= "Direccion: " . $this->getDireccion() . "\n";
+        $msj .= "Lista Clientes: " . $this->listadoClientes() . "\n";
+        $msj .= "Lista de Motos: " . $this->listadoMotos() . "\n";
+        $msj .= "Lista de Ventas: " . $this->listadoVentas();
+        return $msj;
     }
 
 }
