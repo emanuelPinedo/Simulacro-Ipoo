@@ -2,9 +2,9 @@
 class Empresa{
     private $denominacion;
     private $direccion;
-    private $colecClientes = [];
-    private $colecMotos = [];
-    private $colecVentas = [];
+    private $colecClientes;
+    private $colecMotos;
+    private $colecVentas;
 
     public function __construct($denominacion,$direccion,$colecClientes,$colecMotos,$colecVentas) {
         $this->denominacion = $denominacion;
@@ -54,24 +54,45 @@ class Empresa{
         $this->colecVentas = $colVentas;
     }
 
-    public function retornarMoto($codigoMoto){
+    public function retornarMoto($codigoMoto)
+    {
         $i = 0;
-        $motosColec = $this->getColecMotos();
-        $encontrado = false;
-        while($i < count($this->getColecMotos()) && !$encontrado){
-            if($motosColec->getCodigo() == $codigoMoto){
-                $encontrado = true;
-            } else {
-                $i++;
+        $objRetorno = null;
+        do {
+            if ($this->getColecMotos()[$i]->getCodigo() == $codigoMoto) {
+                $objRetorno = $this->getColecMotos()[$i];
             }
-        }
+                $i++;
+        } while ($i < count($this->getColecMotos()) && $objRetorno == null);
+        return $objRetorno;
     }
 
+    //
     public function registrarVenta($colCodigosMoto, $objCliente){
-        foreach ($colCodigosMoto as $codigoMoto){
-            
-        }
+        $coleccionVentas = [];
+        $impFinal = 0;
+        foreach($colCodigosMoto as $code){
+            $objMotoCode = $this->retornarMoto($code);
+            if($objMotoCode != null && $objMotoCode->getDadoBaja() != false){
+                array_push($coleccionVentas, [$this->retornarMoto($code), $objCliente]);
+                $this->setColecVentas($coleccionVentas);
 
+                $impFinal += $objMotoCode->getCosto();
+            }
+        }
+        return $impFinal;
+    }
+
+    //
+    public function retornarVentasXCliente($tipo, $numDoc)
+    {
+        $coleccionCompraCliente = [];
+        foreach ($this->getColecVentas() as $coleccionVenta) {
+            if ($coleccionVenta[1]->getTipoDoc() == $tipo && $coleccionVenta[1]->getNumeroDocumentoInt() == $numDoc) {
+                array_push($coleccionCompraCliente, $coleccionVenta);
+            }
+        }
+        return $coleccionCompraCliente;
     }
 
     public function __toString(){

@@ -67,8 +67,7 @@ class Moto{
     public function darPrecioVenta(){
         $venta = 0;
         $compra = $this->getCosto();
-        $anioActual = date('Y');//Año actual (es para restarlo con el año de fabricación).
-        $anioTranscurrido = $anioActual - $this->getAnioFabric();
+        $anioTranscurrido = 2024 - $this->getAnioFabric();
         if($this->getActiva()){
             $venta = $compra + $compra * ($anioTranscurrido * $this->getPorcIncAnual());
         } else {
