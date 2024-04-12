@@ -85,32 +85,33 @@ class Empresa{
     }
     
     public function registrarVenta($colCodigosMoto, $objCliente){
-        $coleccionVentas = $this->getColecVentas();
         $importeFinal = 0;
-        $fechaActual = date('Y-m-d');
+        $fechaActual = date('Y');//2024
 
-        if (!$objCliente->getDadoBaja()) {
-            foreach ($colCodigosMoto as $codigoActual) {
-                $moto = $this->retornarMoto($codigoActual);
+        if ($objCliente->getDadoBaja()) {
+            return null;//Si el cliente esta dado de baja, retorna null.
+        }
 
-                if ($moto !== null && $moto->getActiva()) {
-                    
-                    //crea una nueva instancia de Venta con la informacion necesaria
-                    $numeroVenta = count($this->getColecVentas())+ 1;
-                    $venta = new Venta ($numeroVenta, $fechaActual,$objCliente, [$moto], 0);
-                    // Suma el costo de la moto al precio final de la venta
-                    $precioVentaMoto =  $moto->darPrecioVenta();
-                    $importeFinal += $precioVentaMoto;
-                    //incorporo la moto a la venta
-                    $venta->incorporarMoto($moto);
+        $coleccionVentas = $this->getColecVentas();
+        $numeroVenta = count($coleccionVentas) + 1;
+        $coleccionMotosVenta = [];
 
-                    //incorporo la nueva venta a la coleccion de ventas
-                    $coleccionVentas[] = $venta;
-                    $this->setColecVentas($coleccionVentas);
-                }
+        foreach ($colCodigosMoto as $codigoAct) {
+            $moto = $this->retornarMoto($codigoAct);
+
+            if ($moto !== null && $moto->getActiva()) {
+                $precioVenta = $moto->darPrecioVenta();
+                $importeFinal += $precioVenta;
+                $coleccionMotosVenta[] = $moto;
             }
         }
-        return $importeFinal;
+
+        $venta = new Venta($numeroVenta, $fechaActual, $objCliente, $coleccionMotosVenta, $importeFinal);
+
+        $coleccionVentas[] = $venta;
+        $this->setColecVentas($coleccionVentas);
+
+        return $venta;
     }
 
     public function retornarVentasXCliente($tipo,$numDoc){

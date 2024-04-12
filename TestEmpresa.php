@@ -14,15 +14,15 @@ $objMoto3 = new Moto(13, 999900, 2023, 'Zanella Patagonian Eagle 250', 55, false
 $objEmpresa = new Empresa('Alta Gama', 'Av Argetina 123', [$objCliente1, $objCliente2], [$objMoto1, $objMoto2, $objMoto3], []);
 
 $importeVenta1 = $objEmpresa->registrarVenta([11, 12, 13], $objCliente2);
-echo "\nImporte de la venta 1: $" . $importeVenta1;
+echo "\nImporte de la venta 1: " . $importeVenta1;
 echo "\n";
 
 $importeVenta2 = $objEmpresa->registrarVenta([12], $objCliente2);
-echo "\nImporte de la venta 2: $" . $importeVenta2;
+echo "\nImporte de la venta 2: " . $importeVenta2;
 echo "\n";
 
 $importeVenta3 = $objEmpresa->registrarVenta([2], $objCliente2);
-echo "\nImporte de la venta 3: $" . $importeVenta3 . "\n";
+echo "\nImporte de la venta 3: " . $importeVenta3 . "\n";
 
 $ventasCliente1 = $objEmpresa->retornarVentasXCliente('DNI', 10);
 echo "\nVentas del cliente 1: \n";
@@ -35,5 +35,3 @@ echo "\nVentas del cliente 2: \n";
 foreach ($ventasCliente2 as $venta) {
     echo $venta . "\n";
 }
-
-?>

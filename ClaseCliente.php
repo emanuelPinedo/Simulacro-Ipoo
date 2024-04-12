@@ -56,9 +56,16 @@ class Cliente{
     }
     
     public function __toString() {
+        $estado = "";
+        if (!$this->getDadoBaja()) {
+            $estado = "Dado de baja";
+        } else {
+            $estado = "Activo";
+        }
+
         return "Nombre: " . $this->getNombre() .
         "\nApellido: " . $this->getApellido() . 
-        "\nEstado: " . $this->getDadoBaja() . 
+        "\nEstado: " . $estado . 
         "\nTipo de Documento: " . $this->getTipoDoc() .
         "\nNúmero de Documento: " . $this->getNroDoc();
     }
