@@ -76,12 +76,18 @@ class Moto{
     }
 
     public function __toString() {
-        return "Código: " . $this->getCodigo() . 
+        if (!$this->getActiva()) {
+            $activa = "No esta a la venta";
+        } else {
+            $activa = "Esta disponible";
+        }
+
+        return "Código moto: " . $this->getCodigo() . 
         "\nCosto: " . $this->getCosto() . 
         "\nAño de Fabricación: " . $this->getAnioFabric() . 
         "\nDescripción: " . $this->getDescripcion() . 
         "\nPorcentaje Incremento Anual: " . $this->getPorcIncAnual() . 
-        "\nActiva: " . $this->activa;
+        "\nActiva: " . $activa;
     }
 
 }
