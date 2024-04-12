@@ -70,10 +70,10 @@ class Moto{
             $compra = $this->getCosto();
             $anioActual = date('Y');
             $anioTranscurrido = $anioActual - $this->getAnioFabric();
-            $venta = $compra + $compra * ($anioTranscurrido * $this->getPorcIncAnual());
-        } else {
-            return $venta; //si Activa es false entonces retorna 0.
+            $venta = $compra + $compra * ($anioTranscurrido * $this->getPorcIncAnual() / 100);
         }
+
+        return $venta; //si Activa es false entonces retorna 0.
     }
 
     public function __toString() {

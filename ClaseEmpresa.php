@@ -71,25 +71,20 @@ class Empresa{
     }
     
     public function registrarVenta($colCodigosMoto, $objCliente){
-        $impFinal = 0;
+        $objVenta = new Venta(null, date('Y'), $objCliente, [], 0);
 
-        if ($objCliente->getDadoBaja()) {
-            return null;
-        }
-
-        $impFinal = 0;
         foreach ($colCodigosMoto as $codeMoto) {
             $objMotoCod = $this->retornarMoto($codeMoto);
             if ($objMotoCod !== null && $objMotoCod->getActiva() && $objCliente->getDadoBaja()) {
-                $venta = new Venta(null, date('Y'), $objCliente, $objMotoCod, $objMotoCod->darPrecioVenta());
-                $this->colecVentas[] = $venta;
-                $impFinal += $objMotoCod->darPrecioVenta();
+                $objVenta->incorporarMoto($objMotoCod);
             }
         }
         // modifico array
-        $this->setColecVentas($this->getColecVentas());
+        $coleccionVentas = $this->getColecVentas();
+        array_push($coleccionVentas,$objVenta);
+        $this->setColecVentas($coleccionVentas);
 
-        return $impFinal;
+        return $objVenta->getPrecioFinal();
     }
 
     public function retornarVentasXCliente($tipo,$numDoc){

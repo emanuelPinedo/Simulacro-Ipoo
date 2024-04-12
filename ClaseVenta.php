@@ -54,10 +54,20 @@ class Venta{
         $this->precioFinal = $finalPrecio;
     }
 
+    public function stringMotos($colecMotos){
+        $retorna="";
+        foreach ($colecMotos as $objMotos){
+            $retorna .= $objMotos;
+        }
+        return $retorna;
+    }
+
     public function incorporarMoto($objMoto){
         if ($objMoto->getActiva()){
-            $this->refColecMotos[] = $objMoto;
-            $this->precioFinal += $objMoto->darPrecioVenta();
+            $coleccionMotos = $this->getRefColecMotos();
+            array_push($coleccionMotos,$objMoto);
+            $this->setRefColecMotos($coleccionMotos);
+            $this->setPrecioFinal($this->getPrecioFinal() + $objMoto->darPrecioVenta());
         }
 
     }
@@ -66,7 +76,7 @@ class Venta{
         return "Número: " . $this->getNum() . 
         "\nFecha: " . $this->getFecha() . 
         "\nReferencia al cliente: " . $this->getRefCliente() . 
-        "\nReferencia a colección de motos: " . $this->getRefColecMotos() . 
+        "\nReferencia a colección de motos: " . $this->stringMotos($this->getRefColecMotos()) . 
         "\nPrecio Final: " . $this->getPrecioFinal();
     }
 
